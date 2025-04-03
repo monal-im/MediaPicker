@@ -4,7 +4,6 @@
 
 import Foundation
 import SwiftUI
-import AnchoredPopup
 
 struct FullscreenContainer: View {
 
@@ -38,7 +37,6 @@ struct FullscreenContainer: View {
                 contentView(g.size)
             }
         }
-        .safeAreaPadding(.top, UIApplication.safeArea.top)
         .background {
             theme.main.fullscreenPhotoBackground
                 .ignoresSafeArea()
@@ -51,7 +49,7 @@ struct FullscreenContainer: View {
         .onDisappear {
             currentFullscreenMedia = nil
         }
-        .onChange(of: selection) {
+        .onChange(of: selection) { _ in
             if let selectedMediaModel {
                 currentFullscreenMedia = Media(source: selectedMediaModel)
             }
@@ -107,7 +105,6 @@ struct FullscreenContainer: View {
                 .contentShape(Rectangle())
                 .onTapGesture {
                     selection = nil
-                    AnchoredPopup.launchShrinkingAnimation(id: animationID)
                 }
 
             Spacer()
@@ -115,7 +112,6 @@ struct FullscreenContainer: View {
             if let selectedMediaModel = selectedMediaModel {
                 if selectionParamsHolder.selectionLimit == 1 {
                     Button("Select") {
-                        AnchoredPopup.launchShrinkingAnimation(id: animationID)
                         selectionService.onSelect(assetMediaModel: selectedMediaModel)
                         dismiss()
                     }

@@ -9,7 +9,6 @@ public enum LiveCameraCellStyle {
 }
 
 import SwiftUI
-import AnchoredPopup
 
 struct AlbumView: View {
 
@@ -108,7 +107,7 @@ struct AlbumView: View {
                 .aspectRatio(1, contentMode: .fit)
             }
         }
-        .onChange(of: viewModel.assetMediaModels) { _ , newValue in
+        .onChange(of: viewModel.assetMediaModels) { newValue in
             selectionService.updateSelection(with: newValue)
         }
     }
@@ -129,29 +128,7 @@ struct AlbumView: View {
                 fullscreenItem = assetMediaModel.id
             }
         } label: {
-            let id = "fullscreen_photo_\(index)"
             MediaCell(viewModel: MediaViewModel(assetMediaModel: assetMediaModel), size: size)
-                .applyIf(selectionParamsHolder.showFullscreenPreview) {
-                    $0.useAsPopupAnchor(id: id) {
-                        FullscreenContainer(
-                            currentFullscreenMedia: $currentFullscreenMedia,
-                            selection: $fullscreenItem,
-                            animationID: id,
-                            assetMediaModels: viewModel.assetMediaModels,
-                            selectionParamsHolder: selectionParamsHolder,
-                            dismiss: dismiss
-                        )
-                        .environmentObject(selectionService)
-                    } customize: {
-                        $0.closeOnTap(false)
-                            .animation(.easeIn(duration: 0.2))
-                    }
-                    .simultaneousGesture(
-                        TapGesture().onEnded {
-                            fullscreenItem = assetMediaModel.id
-                        }
-                    )
-                }
         }
         .buttonStyle(MediaButtonStyle())
         .contentShape(Rectangle())
