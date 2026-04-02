@@ -12,6 +12,8 @@ import SwiftUI
 
 struct AlbumView: View {
 
+    enum DisplayMode { case allPhotos, albumPhotos }
+
     @EnvironmentObject private var selectionService: SelectionService
     @Environment(\.mediaPickerTheme) private var theme
 
@@ -22,8 +24,8 @@ struct AlbumView: View {
     @Binding var showingCamera: Bool
     @Binding var currentFullscreenMedia: Media?
 
-    var selectionParamsHolder: SelectionParamsHolder
-    var mediaPickerParamsHolder: MediaPickerParamsHolder
+    var displayMode: DisplayMode
+    var mediaPickerParams: MediaPickerCutomizationParameters
     var dismiss: ()->()
 
     @State private var fullscreenItem: AssetMediaModel.ID?
@@ -48,7 +50,7 @@ struct AlbumView: View {
             VStack(spacing: 0) {
                 PermissionActionView(type: .library(permissionsService.photoLibraryPermissionStatus))
 
-                if mediaPickerParamsHolder.liveCameraCell != .none {
+                if mediaPickerParams.liveCameraStyle != .none, displayMode == .allPhotos {
                     PermissionActionView(type: .camera(permissionsService.cameraPermissionStatus))
                 }
 
@@ -118,7 +120,7 @@ struct AlbumView: View {
             if keyboardHeightHelper.keyboardDisplayed {
                 dismissKeyboard()
             }
-            if !selectionParamsHolder.showFullscreenPreview { // select immediately
+            if !mediaPickerParams.selectionParameters.showFullscreenPreview { // select immediately
                 selectionService.onSelect(assetMediaModel: assetMediaModel)
                 if selectionService.mediaSelectionLimit == 1 {
                     dismiss()
@@ -136,7 +138,7 @@ struct AlbumView: View {
         if selectionService.mediaSelectionLimit == 1 {
             imageButton
         } else {
-            SelectableView(selected: selectionService.index(of: assetMediaModel), isFullscreen: false, canSelect: selectionService.canSelect(assetMediaModel: assetMediaModel), selectionParamsHolder: selectionParamsHolder) {
+            SelectableView(selected: selectionService.index(of: assetMediaModel), isFullscreen: false, canSelect: selectionService.canSelect(assetMediaModel: assetMediaModel), selectionParameters: mediaPickerParams.selectionParameters) {
                 selectionService.onSelect(assetMediaModel: assetMediaModel)
             } content: {
                 imageButton
